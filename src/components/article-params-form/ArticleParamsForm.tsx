@@ -28,7 +28,7 @@ export const ArticleParamsForm = ({
 	initialState,
 	onApply,
 }: ArticleParamsFormProps) => {
-	const [isOpen, setIsOpen] = useState(true);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [formState, setFormState] = useState(initialState);
 
 	const rootRef = useRef<HTMLDivElement>(null);
@@ -44,17 +44,28 @@ export const ArticleParamsForm = ({
 	};
 
 	useOutsideClickClose({
-		isOpen,
+		isOpen: isSidebarOpen,
 		rootRef,
-		onChange: setIsOpen,
+		onChange: setIsSidebarOpen,
 	});
+
+	const createFieldChangeHandler = (field: keyof ArticleStateType) => {
+		return (value: ArticleStateType[typeof field]) => {
+			setFormState((state) => ({ ...state, [field]: value }));
+		};
+	};
 
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+			<ArrowButton
+				isOpen={isSidebarOpen}
+				onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+			/>
 			<aside
 				ref={rootRef}
-				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
+				className={clsx(styles.container, {
+					[styles.container_open]: isSidebarOpen,
+				})}>
 				<form className={styles.form} onSubmit={handleSubmit}>
 					<Text size={31} weight={800}>
 						Задайте параметры
@@ -64,42 +75,32 @@ export const ArticleParamsForm = ({
 						placeholder='Выберите шрифт'
 						options={fontFamilyOptions}
 						selected={formState.fontFamilyOption}
-						onChange={(value) =>
-							setFormState({ ...formState, fontFamilyOption: value })
-						}></Select>
+						onChange={createFieldChangeHandler('fontFamilyOption')}></Select>
 					<RadioGroup
 						title='Размер шрифта'
 						name='sizes'
 						options={fontSizeOptions}
 						selected={formState.fontSizeOption}
-						onChange={(value) =>
-							setFormState({ ...formState, fontSizeOption: value })
-						}></RadioGroup>
+						onChange={createFieldChangeHandler('fontSizeOption')}></RadioGroup>
 					<Select
 						title='Цвет шрифта'
 						placeholder='Выберите цвет шрифта'
 						options={fontColors}
 						selected={formState.fontColor}
-						onChange={(value) =>
-							setFormState({ ...formState, fontColor: value })
-						}></Select>
+						onChange={createFieldChangeHandler('fontColor')}></Select>
 					<Separator></Separator>
 					<Select
 						title='Цвет фона'
 						placeholder='Выберите цвет фона'
 						options={backgroundColors}
 						selected={formState.backgroundColor}
-						onChange={(value) =>
-							setFormState({ ...formState, backgroundColor: value })
-						}></Select>
+						onChange={createFieldChangeHandler('backgroundColor')}></Select>
 					<Select
 						title='Ширина контента'
 						placeholder='Выберите ширину'
 						options={contentWidthArr}
 						selected={formState.contentWidth}
-						onChange={(value) =>
-							setFormState({ ...formState, contentWidth: value })
-						}></Select>
+						onChange={createFieldChangeHandler('contentWidth')}></Select>
 					<div className={styles.bottomContainer}>
 						<Button
 							title='Сбросить'

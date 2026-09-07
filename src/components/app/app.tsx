@@ -22,7 +22,7 @@ export const App = () => {
 				} as CSSProperties
 			}>
 			<ArticleParamsForm
-				initialState={defaultArticleState}
+				initialState={articleState}
 				onApply={setArticleState}
 			/>
 			<Article />
